@@ -4,3 +4,7 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
+actix-web = "4.6.0" # TODO: REMOVE THIS
+futures-core = "0.3.30"
+serde = {version = "1.0.203", features = ["derive"]}
+validator = "0.18.1"
