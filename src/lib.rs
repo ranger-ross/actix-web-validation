@@ -1,6 +1,7 @@
 use actix_web::FromRequest;
 use futures_core::ready;
-use std::{future::Future, pin::Pin, task::Poll};
+use std::{fmt::Debug, future::Future, ops::Deref, pin::Pin, task::Poll};
+use validator::Validate;
 
 pub struct Validated<T>(pub T);
 
@@ -10,8 +11,9 @@ pub struct ValidatedFut<T: FromRequest> {
 
 impl<T> Future for ValidatedFut<T>
 where
-    T: FromRequest,
+    T: FromRequest + Debug + Deref,
     T::Future: Unpin,
+    T::Target: Validate,
 {
     type Output = Result<Validated<T>, actix_web::Error>;
 
@@ -20,12 +22,13 @@ where
         cx: &mut std::task::Context<'_>,
     ) -> std::task::Poll<Self::Output> {
         let this = self.get_mut();
-        //
         let res = ready!(Pin::new(&mut this.fut).poll(cx));
 
         let res = match res {
             Ok(data) => {
-                // TODO: Do validation here ...
+                if let Err(e) = data.validate() {
+                    todo!("Reject request");
+                }
 
                 Ok(Validated(data))
             }
@@ -38,8 +41,9 @@ where
 
 impl<T> FromRequest for Validated<T>
 where
-    T: FromRequest,
+    T: FromRequest + Debug + Deref,
     T::Future: Unpin,
+    T::Target: Validate,
 {
     type Error = actix_web::Error; // TODO: Better errors
 

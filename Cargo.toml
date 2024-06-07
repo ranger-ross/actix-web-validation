@@ -7,4 +7,4 @@ edition = "2021"
 actix-web = "4.6.0" # TODO: REMOVE THIS
 futures-core = "0.3.30"
 serde = {version = "1.0.203", features = ["derive"]}
-validator = "0.18.1"
+validator = { version = "0.18.1", features = ["derive"] }
