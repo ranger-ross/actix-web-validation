@@ -74,7 +74,7 @@ where
         ValidatedFut {
             fut,
             error_handler,
-            req: req.clone(), // TODO: Dont clone req
+            req: req.clone(),
         }
     }
 }
