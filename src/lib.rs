@@ -3,6 +3,8 @@ use futures_core::ready;
 use std::{fmt::Debug, future::Future, ops::Deref, pin::Pin, task::Poll};
 use validator::Validate;
 
+pub mod error;
+
 pub struct Validated<T>(pub T);
 
 pub struct ValidatedFut<T: FromRequest> {
@@ -27,12 +29,13 @@ where
         let res = match res {
             Ok(data) => {
                 if let Err(e) = data.validate() {
-                    todo!("Reject request");
+                    let err: crate::error::Error = e.into();
+                    Err(err.into())
+                } else {
+                    Ok(Validated(data))
                 }
-
-                Ok(Validated(data))
             }
-            Err(_) => todo!(), // TODO: Handle errors
+            Err(e) => Err(e.into()),
         };
 
         Poll::Ready(res)
@@ -45,7 +48,7 @@ where
     T::Future: Unpin,
     T::Target: Validate,
 {
-    type Error = actix_web::Error; // TODO: Better errors
+    type Error = actix_web::Error;
 
     type Future = ValidatedFut<T>;
 
