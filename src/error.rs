@@ -8,36 +8,6 @@ use validator::{ValidationError, ValidationErrors, ValidationErrorsKind};
 pub enum Error {
     #[error("Validation error: {0}")]
     Validate(#[from] validator::ValidationErrors),
-    #[error(transparent)]
-    Deserialize(#[from] DeserializeErrors),
-    #[error("Payload error: {0}")]
-    JsonPayloadError(#[from] actix_web::error::JsonPayloadError),
-    #[error("Url encoded error: {0}")]
-    UrlEncodedError(#[from] actix_web::error::UrlencodedError),
-    #[error("Query error: {0}")]
-    QsError(#[from] serde_qs::Error),
-}
-
-#[derive(Error, Debug)]
-pub enum DeserializeErrors {
-    #[error("Query deserialize error: {0}")]
-    DeserializeQuery(serde_urlencoded::de::Error),
-    #[error("Json deserialize error: {0}")]
-    DeserializeJson(serde_json::error::Error),
-    #[error("Path deserialize error: {0}")]
-    DeserializePath(serde::de::value::Error),
-}
-
-impl From<serde_json::error::Error> for Error {
-    fn from(error: serde_json::error::Error) -> Self {
-        Error::Deserialize(DeserializeErrors::DeserializeJson(error))
-    }
-}
-
-impl From<serde_urlencoded::de::Error> for Error {
-    fn from(error: serde_urlencoded::de::Error) -> Self {
-        Error::Deserialize(DeserializeErrors::DeserializeQuery(error))
-    }
 }
 
 impl ResponseError for Error {
@@ -53,7 +23,6 @@ impl ResponseError for Error {
                         .join("\n")
                 )
             }
-            _ => format!("{}", *self),
         })
     }
 }

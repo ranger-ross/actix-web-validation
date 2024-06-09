@@ -4,11 +4,8 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-actix-web = "4.6.0" # TODO: REMOVE THIS
-futures-core = "0.3.30"
-serde = {version = "1.0.203", features = ["derive"]}
-serde_json = "1.0.117"
-serde_qs = "0.13.0"
-serde_urlencoded = "0.7.1"
+actix-web = "4"
+futures-core = "0.3"
+serde = {version = "1", features = ["derive"]}
 thiserror = "1.0.61"
-validator = { version = "0.18.1", features = ["derive"] }
+validator = { version = "0.18", features = ["derive"] }
