@@ -10,6 +10,26 @@ pub use error::ValidationErrorHandlerExt;
 
 pub struct Validated<T>(pub T);
 
+impl<T> Validated<T> {
+    pub fn into_inner(self) -> T {
+        self.0
+    }
+}
+
+impl<T> std::ops::Deref for Validated<T> {
+    type Target = T;
+
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}
+
+impl<T> std::ops::DerefMut for Validated<T> {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.0
+    }
+}
+
 pub struct ValidatedFut<T: FromRequest> {
     req: actix_web::HttpRequest,
     fut: <T as FromRequest>::Future,

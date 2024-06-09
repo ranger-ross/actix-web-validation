@@ -1,4 +1,3 @@
-use std::fmt::Display;
 use std::sync::Arc;
 
 use actix_web::HttpRequest;
@@ -6,7 +5,7 @@ use actix_web::{post, web::Json, App, HttpResponse, HttpServer, Responder};
 use actix_web_validation::Validated;
 use actix_web_validation::ValidationErrorHandlerExt;
 use derive_more::{Display, Error};
-use serde::{Deserialize, Serialize};
+use serde::Deserialize;
 use validator::Validate;
 
 #[derive(Debug, Validate, Deserialize)]
@@ -17,7 +16,9 @@ struct Example {
 
 #[post("/")]
 async fn post_hello(x: Validated<Json<Example>>) -> impl Responder {
-    println!("{:#?}", x.0);
+    let x = x.into_inner().into_inner();
+
+    println!("{:#?}", x);
 
     HttpResponse::Ok().body("Hello world!")
 }
