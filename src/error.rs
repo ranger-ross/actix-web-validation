@@ -1,6 +1,9 @@
 //! Error declaration.
+use std::sync::Arc;
+
+use actix_web::dev::{ServiceFactory, ServiceRequest};
 use actix_web::http::StatusCode;
-use actix_web::{HttpResponse, ResponseError};
+use actix_web::{App, HttpRequest, HttpResponse, ResponseError};
 use thiserror::Error;
 use validator::{ValidationError, ValidationErrors, ValidationErrorsKind};
 
@@ -68,4 +71,24 @@ fn _flatten_errors(
             }
         })
         .collect::<Vec<_>>()
+}
+
+pub type ErrHandler =
+    Arc<dyn Fn(validator::ValidationErrors, &HttpRequest) -> actix_web::Error + Send + Sync>;
+
+pub struct ValidationErrorHandler {
+    pub handler: ErrHandler,
+}
+
+pub trait ValidationErrorHandlerExt {
+    fn validation_error_handler(self, handler: ErrHandler) -> Self;
+}
+
+impl<T> ValidationErrorHandlerExt for App<T>
+where
+    T: ServiceFactory<ServiceRequest, Config = (), Error = actix_web::Error, InitError = ()>,
+{
+    fn validation_error_handler(self, handler: ErrHandler) -> Self {
+        self.app_data(ValidationErrorHandler { handler })
+    }
 }

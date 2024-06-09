@@ -189,6 +189,7 @@ name = "actix-web-validation"
 version = "0.1.0"
 dependencies = [
  "actix-web",
+ "derive_more",
  "futures-core",
  "serde",
  "thiserror",
