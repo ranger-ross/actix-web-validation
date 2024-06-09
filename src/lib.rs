@@ -3,7 +3,7 @@ use futures_core::ready;
 use std::{fmt::Debug, future::Future, ops::Deref, pin::Pin, task::Poll};
 use validator::Validate;
 
-pub mod error;
+mod error;
 
 pub struct Validated<T>(pub T);
 
