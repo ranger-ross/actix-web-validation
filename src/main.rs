@@ -2,11 +2,33 @@ use std::sync::Arc;
 
 use actix_web::HttpRequest;
 use actix_web::{post, web::Json, App, HttpResponse, HttpServer, Responder};
-use actix_web_validation::Validated;
-use actix_web_validation::ValidationErrorHandlerExt;
+use actix_web_validation::validator::Validated;
+use actix_web_validation::validator::ValidationErrorHandlerExt;
 use derive_more::{Display, Error};
 use serde::Deserialize;
 use validator::Validate;
+
+mod garde_test {
+    use actix_web::{post, web::Json, HttpResponse, Responder};
+    use actix_web_validation::garde::Validated;
+    use garde::Validate;
+    use serde::Deserialize;
+
+    #[derive(Debug, Validate, Deserialize)]
+    struct Example {
+        #[garde(length(min = 5))]
+        name: String,
+    }
+
+    #[post("/garde")]
+    pub async fn post_hello(x: Validated<Json<Example>>) -> impl Responder {
+        let x = x.into_inner().into_inner();
+
+        println!("{:#?}", x);
+
+        HttpResponse::Ok().body("Hello world!")
+    }
+}
 
 #[derive(Debug, Validate, Deserialize)]
 struct Example {
@@ -28,6 +50,7 @@ async fn main() -> std::io::Result<()> {
     HttpServer::new(|| {
         App::new()
             .service(post_hello)
+            .service(garde_test::post_hello)
             .validation_error_handler(Arc::new(handle_validation_errors))
     })
     .bind(("127.0.0.1", 8080))?
