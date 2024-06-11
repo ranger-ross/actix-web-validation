@@ -36,10 +36,8 @@ struct Example {
 }
 
 #[post("/")]
-async fn post_hello(x: Validated<Json<Example>>) -> impl Responder {
-    let x = x.into_inner().into_inner();
-
-    println!("{:#?}", x);
+async fn post_hello(Validated(Json(payload)): Validated<Json<Example>>) -> impl Responder {
+    println!("{:#?}", payload);
 
     HttpResponse::Ok().body("Hello world!")
 }
