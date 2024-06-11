@@ -5,6 +5,7 @@ use actix_web::FromRequest;
 use actix_web::{App, HttpRequest, HttpResponse, ResponseError};
 use futures_core::ready;
 use futures_core::Future;
+use std::fmt::Display;
 use std::sync::Arc;
 use std::{fmt::Debug, ops::Deref, pin::Pin, task::Poll};
 use thiserror::Error;
@@ -35,7 +36,7 @@ impl<T> std::ops::DerefMut for Validated<T> {
 pub struct ValidatedFut<T: FromRequest> {
     req: actix_web::HttpRequest,
     fut: <T as FromRequest>::Future,
-    error_handler: Option<ErrHandler>,
+    error_handler: Option<ValidatorErrHandler>,
 }
 impl<T> Future for ValidatedFut<T>
 where
@@ -87,7 +88,7 @@ where
         payload: &mut actix_web::dev::Payload,
     ) -> Self::Future {
         let error_handler = req
-            .app_data::<ValidationErrorHandler>()
+            .app_data::<ValidatorErrorHandler>()
             .map(|h| h.handler.clone());
 
         let fut = T::from_request(req, payload);
@@ -101,25 +102,32 @@ where
 }
 
 #[derive(Error, Debug)]
-pub enum Error {
-    #[error("Validation error: {0}")]
-    Validate(#[from] validator::ValidationErrors),
+pub struct Error {
+    errors: validator::ValidationErrors,
+}
+
+impl From<validator::ValidationErrors> for Error {
+    fn from(value: validator::ValidationErrors) -> Self {
+        Self { errors: value }
+    }
+}
+
+impl Display for Error {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}", self.errors)
+    }
 }
 
 impl ResponseError for Error {
     fn error_response(&self) -> HttpResponse {
-        HttpResponse::build(StatusCode::BAD_REQUEST).body(match self {
-            Self::Validate(e) => {
-                format!(
-                    "Validation errors in fields:\n{}",
-                    flatten_errors(e)
-                        .iter()
-                        .map(|(_, field, err)| { format!("\t{}: {}", field, err) })
-                        .collect::<Vec<_>>()
-                        .join("\n")
-                )
-            }
-        })
+        HttpResponse::build(StatusCode::BAD_REQUEST).body(format!(
+            "Validation errors in fields:\n{}",
+            flatten_errors(&self.errors)
+                .iter()
+                .map(|(_, field, err)| { format!("\t{}: {}", field, err) })
+                .collect::<Vec<_>>()
+                .join("\n")
+        ))
     }
 }
 
@@ -166,22 +174,22 @@ fn _flatten_errors(
         .collect::<Vec<_>>()
 }
 
-pub type ErrHandler =
+pub type ValidatorErrHandler =
     Arc<dyn Fn(validator::ValidationErrors, &HttpRequest) -> actix_web::Error + Send + Sync>;
 
-pub struct ValidationErrorHandler {
-    pub handler: ErrHandler,
+pub struct ValidatorErrorHandler {
+    pub handler: ValidatorErrHandler,
 }
 
-pub trait ValidationErrorHandlerExt {
-    fn validation_error_handler(self, handler: ErrHandler) -> Self;
+pub trait ValidatorErrorHandlerExt {
+    fn validator_error_handler(self, handler: ValidatorErrHandler) -> Self;
 }
 
-impl<T> ValidationErrorHandlerExt for App<T>
+impl<T> ValidatorErrorHandlerExt for App<T>
 where
     T: ServiceFactory<ServiceRequest, Config = (), Error = actix_web::Error, InitError = ()>,
 {
-    fn validation_error_handler(self, handler: ErrHandler) -> Self {
-        self.app_data(ValidationErrorHandler { handler })
+    fn validator_error_handler(self, handler: ValidatorErrHandler) -> Self {
+        self.app_data(ValidatorErrorHandler { handler })
     }
 }

@@ -2,8 +2,7 @@ use std::sync::Arc;
 
 use actix_web::HttpRequest;
 use actix_web::{post, web::Json, App, HttpResponse, HttpServer, Responder};
-use actix_web_validation::validator::Validated;
-use actix_web_validation::validator::ValidationErrorHandlerExt;
+use actix_web_validation::validator::{Validated, ValidatorErrorHandlerExt};
 use derive_more::{Display, Error};
 use serde::Deserialize;
 use validator::Validate;
@@ -51,7 +50,7 @@ async fn main() -> std::io::Result<()> {
         App::new()
             .service(post_hello)
             .service(garde_test::post_hello)
-            .validation_error_handler(Arc::new(handle_validation_errors))
+            .validator_error_handler(Arc::new(handle_validation_errors))
     })
     .bind(("127.0.0.1", 8080))?
     .run()

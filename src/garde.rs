@@ -5,6 +5,7 @@ use actix_web::FromRequest;
 use actix_web::{App, HttpRequest, HttpResponse, ResponseError};
 use futures_core::ready;
 use futures_core::Future;
+use std::fmt::Display;
 use std::sync::Arc;
 use std::{fmt::Debug, ops::Deref, pin::Pin, task::Poll};
 use thiserror::Error;
@@ -34,7 +35,7 @@ impl<T> std::ops::DerefMut for Validated<T> {
 pub struct ValidatedFut<T: FromRequest> {
     req: actix_web::HttpRequest,
     fut: <T as FromRequest>::Future,
-    error_handler: Option<ErrHandler>,
+    error_handler: Option<GardeErrHandler>,
 }
 
 impl<T> Future for ValidatedFut<T>
@@ -89,7 +90,7 @@ where
         payload: &mut actix_web::dev::Payload,
     ) -> Self::Future {
         let error_handler = req
-            .app_data::<ValidationErrorHandler>()
+            .app_data::<GardeErrorHandler>()
             .map(|h| h.handler.clone());
 
         let fut = T::from_request(req, payload);
@@ -103,44 +104,52 @@ where
 }
 
 #[derive(Error, Debug)]
-pub enum Error {
-    #[error("Validation error: {0}")]
-    Validate(#[from] garde::Report),
+pub struct Error {
+    report: garde::Report,
+}
+
+impl From<garde::Report> for Error {
+    fn from(value: garde::Report) -> Self {
+        Self { report: value }
+    }
+}
+
+impl Display for Error {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}", self.report)
+    }
 }
 
 impl ResponseError for Error {
     fn error_response(&self) -> HttpResponse {
-        HttpResponse::build(StatusCode::BAD_REQUEST).body(match self {
-            Self::Validate(e) => {
-                let message = e
-                    .iter()
-                    .map(|(path, error)| {
-                        format!("{}: {}", path.to_string(), error.message().to_string())
-                    })
-                    .collect::<Vec<_>>()
-                    .join("\n");
+        let message = self
+            .report
+            .iter()
+            .map(|(path, error)| format!("{}: {}", path.to_string(), error.message().to_string()))
+            .collect::<Vec<_>>()
+            .join("\n");
 
-                format!("Validation errors in fields:\n{}", message)
-            }
-        })
+        HttpResponse::build(StatusCode::BAD_REQUEST)
+            .body(format!("Validation errors in fields:\n{}", message))
     }
 }
 
-pub type ErrHandler = Arc<dyn Fn(garde::Report, &HttpRequest) -> actix_web::Error + Send + Sync>;
+pub type GardeErrHandler =
+    Arc<dyn Fn(garde::Report, &HttpRequest) -> actix_web::Error + Send + Sync>;
 
-pub struct ValidationErrorHandler {
-    pub handler: ErrHandler,
+pub struct GardeErrorHandler {
+    pub handler: GardeErrHandler,
 }
 
-pub trait ValidationErrorHandlerExt {
-    fn validation_error_handler(self, handler: ErrHandler) -> Self;
+pub trait GardeErrorHandlerExt {
+    fn garde_error_handler(self, handler: GardeErrHandler) -> Self;
 }
 
-impl<T> ValidationErrorHandlerExt for App<T>
+impl<T> GardeErrorHandlerExt for App<T>
 where
     T: ServiceFactory<ServiceRequest, Config = (), Error = actix_web::Error, InitError = ()>,
 {
-    fn validation_error_handler(self, handler: ErrHandler) -> Self {
-        self.app_data(ValidationErrorHandler { handler })
+    fn garde_error_handler(self, handler: GardeErrHandler) -> Self {
+        self.app_data(GardeErrorHandler { handler })
     }
 }
