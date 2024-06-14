@@ -5,15 +5,14 @@ edition = "2021"
 
 [dependencies]
 actix-web = "4"
-derive_more = "0.99.17" # TODO: remove this. its only for testing
 futures-core = "0.3"
-garde = { version = "0.19.0", features = ["derive"] }
-serde = {version = "1", features = ["derive"]}
 thiserror = "1.0.61"
-validator = { version = "0.18", features = ["derive"] }
-
+validator = { version = "0.18", optional = true }
+garde = { version = "0.19.0", optional = true }
 
 [features]
-validator = []
-garde = []
+default = ["exclusive"]
+exclusive = []
+validator = ["dep:validator"]
+garde = ["dep:garde"]
 

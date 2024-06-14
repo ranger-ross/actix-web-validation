@@ -16,8 +16,13 @@ Request validation for actix-web.
 
 <summary>Using Validator</summary>
 
+```toml
+# Cargo.toml
+actix-web-validation = { version = "0.0.0", features = ["validator"]}
+```
+
 ```rs
-use actix_web_validation::validator::Validate;
+use actix_web_validation::Validate;
 
 
 #[derive(Debug, Validate, Deserialize)]
@@ -41,8 +46,13 @@ async fn hello(Validated(Json(payload)): Validated<Json<Example>>) -> impl Respo
 
 <summary>Using Garde</summary>
 
+```toml
+# Cargo.toml
+actix-web-validation = { version = "0.0.0", features = ["garde"]}
+```
+
 ```rs
-use actix_web_validation::garde::Validate;
+use actix_web_validation::Validate;
 
 #[derive(Debug, Validate, Deserialize)]
 struct Example {
@@ -59,5 +69,6 @@ async fn hello(Validated(Json(payload)): Validated<Json<Example>>) -> impl Respo
 </details>
 
 
+TODO: Document how to use validator+garde in same project
 
 
