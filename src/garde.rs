@@ -10,6 +10,26 @@ use std::sync::Arc;
 use std::{fmt::Debug, ops::Deref, pin::Pin, task::Poll};
 use thiserror::Error;
 
+/// A validated extactor.
+///
+/// This type will run any validations on the inner extractors.
+///
+/// ```
+/// use actix_web::{post, web::{self, Json}, App};
+/// use serde::Deserialize;
+/// use garde::Validate;
+///
+/// #[derive(Deserialize, Validate)]
+/// struct Info {
+///     #[garde(length(min = 3))]
+///     username: String,
+/// }
+///
+/// #[post("/")]
+/// async fn index(info: Validated<Json<Info>>) -> String {
+///     format!("Welcome {}!", info.username)
+/// }
+/// ```
 pub struct Validated<T>(pub T);
 
 impl<T> Validated<T> {
@@ -137,8 +157,8 @@ impl ResponseError for Error {
 pub type GardeErrHandler =
     Arc<dyn Fn(garde::Report, &HttpRequest) -> actix_web::Error + Send + Sync>;
 
-pub struct GardeErrorHandler {
-    pub handler: GardeErrHandler,
+struct GardeErrorHandler {
+    handler: GardeErrHandler,
 }
 
 pub trait GardeErrorHandlerExt {

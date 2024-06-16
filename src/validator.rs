@@ -11,6 +11,26 @@ use std::{fmt::Debug, ops::Deref, pin::Pin, task::Poll};
 use thiserror::Error;
 use validator::{ValidationError, ValidationErrors, ValidationErrorsKind};
 
+/// A validated extactor.
+///
+/// This type will run any validations on the inner extractors.
+///
+/// ```
+/// use actix_web::{post, web::{self, Json}, App};
+/// use serde::Deserialize;
+/// use validator::Validate;
+///
+/// #[derive(Deserialize, Validate)]
+/// struct Info {
+///     #[validate(length(min = 5))]
+///     username: String,
+/// }
+///
+/// #[post("/")]
+/// async fn index(info: Validated<Json<Info>>) -> String {
+///     format!("Welcome {}!", info.username)
+/// }
+/// ```
 pub struct Validated<T>(pub T);
 
 impl<T> Validated<T> {
@@ -135,7 +155,7 @@ impl ResponseError for Error {
 /// Return Vec of tuples where first element is full field path (separated by dot)
 /// and second is error.
 #[inline]
-pub fn flatten_errors(errors: &ValidationErrors) -> Vec<(u16, String, &ValidationError)> {
+fn flatten_errors(errors: &ValidationErrors) -> Vec<(u16, String, &ValidationError)> {
     _flatten_errors(errors, None, None)
 }
 
@@ -177,8 +197,8 @@ fn _flatten_errors(
 pub type ValidatorErrHandler =
     Arc<dyn Fn(validator::ValidationErrors, &HttpRequest) -> actix_web::Error + Send + Sync>;
 
-pub struct ValidatorErrorHandler {
-    pub handler: ValidatorErrHandler,
+struct ValidatorErrorHandler {
+    handler: ValidatorErrHandler,
 }
 
 pub trait ValidatorErrorHandlerExt {
