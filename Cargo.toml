@@ -1,7 +1,12 @@
 [package]
 name = "actix-web-validation"
+description = "A common validation interface for actix-web applications"
 version = "0.1.0"
 edition = "2021"
+authors = ["Ross Sullivan <rosssullivan101@gmail.com>"]
+repository = "https://github.com/ranger-ross/actix-web-validation"
+license = "MIT"
+
 
 [dependencies]
 actix-web = "4"
@@ -12,7 +17,14 @@ garde = { version = "0.19", optional = true }
 
 [features]
 default = ["exclusive"]
+
+# Only allow one validation library at a time. Enabling this feature will reexport `Validated` at the crate root for easy of use.
+# Enabling this feature is reccomended unless you need multiple validation liraries
 exclusive = []
+
+# Use validator crate (https://github.com/Keats/validator) as the validation implmentation
 validator = ["dep:validator"]
+
+# Use garde crate (https://github.com/jprochazk/garde) as the validation implmentation
 garde = ["dep:garde"]
 
