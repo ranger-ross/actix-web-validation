@@ -12,63 +12,39 @@ Request validation for actix-web.
 
 ## Usage
 
-<details>
-
-<summary>Using Validator</summary>
 
 ```toml
 # Cargo.toml
 actix-web-validation = { version = "0.0.0", features = ["validator"]}
-```
-
-```rs
-use actix_web_validation::Validate;
-
-
-#[derive(Debug, Validate, Deserialize)]
-struct Example {
-    #[validate(length(min = 5))]
-    name: String,
-}
-
-#[post("/")]
-async fn hello(Validated(Json(payload)): Validated<Json<Example>>) -> impl Responder {
-    HttpResponse::Ok().body(payload)
-}
-
-```
-
-</details>
-
-
-
-<details>
-
-<summary>Using Garde</summary>
-
-```toml
-# Cargo.toml
+# or 
 actix-web-validation = { version = "0.0.0", features = ["garde"]}
 ```
 
 ```rs
-use actix_web_validation::Validate;
+use actix_web_validation::Validated;
 
+use validator::Validate;
+// or use garde::Validate;
+
+// Do validation using your validation library
 #[derive(Debug, Validate, Deserialize)]
 struct Example {
-    #[validate(length(min = 5))]
+    #[validate(length(min = 3))]
     name: String,
 }
 
+// Wrap your Actix extractor with `Validated` to automatically run validation
 #[post("/")]
 async fn hello(Validated(Json(payload)): Validated<Json<Example>>) -> impl Responder {
-    HttpResponse::Ok().body(payload)
+    HttpResponse::Ok().body(format!("Hello {}", payload.name))
 }
 ```
 
-</details>
+## Limitations
+
+TODO
 
 
-TODO: Document how to use validator+garde in same project
+## Motivations
 
-
+TODO
