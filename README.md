@@ -1,7 +1,9 @@
 # Actix Web Validation
 
-Request validation for actix-web.
+> [!WARNING]  
+> This library is currently in early access and may recieve breaking changes. Use at your own risk.
 
+Request validation for actix-web.
 
 ## Supported Validation Libraries
 
@@ -10,6 +12,8 @@ Request validation for actix-web.
 
 
 ## Usage
+
+Any type that implments the Actix [`FromRequest`](https://docs.rs/actix-web/latest/actix_web/trait.FromRequest.html) trait can be automatically validated.
 
 
 ```toml
