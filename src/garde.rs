@@ -124,7 +124,7 @@ where
 }
 
 #[derive(Error, Debug)]
-pub struct Error {
+struct Error {
     report: garde::Report,
 }
 

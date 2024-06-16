@@ -122,7 +122,7 @@ where
 }
 
 #[derive(Error, Debug)]
-pub struct Error {
+struct Error {
     errors: validator::ValidationErrors,
 }
 
