@@ -119,12 +119,6 @@ async fn main() -> std::io::Result<()> {
     .await
 }
 ```
-
-## Limitations
-
-Usage of `actix_web_validation::Validated` is limited to one validation implmentation at a time. 
-If you need to multiple validator, you can disable the `exclusive` feature flag (part of the default feature flags). Disabling will remove `actix_web_validation::Validated` but allow using the library implmentations directly (ie. `actix_web_validation::validator::Validated`, `actix_web_validation::garde::Validated`).
-
 ## Motivations
 
 This library is heavily inspired by [Spring Validation](https://docs.spring.io/spring-framework/reference/core/validation/beanvalidation.html) and [actix-web-validator](https://crates.io/crates/actix-web-validator). 
