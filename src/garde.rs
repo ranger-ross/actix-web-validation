@@ -1,3 +1,6 @@
+//! Validation for the [garde](https://docs.rs/garde/latest/garde) crate.
+//! Requires the `garde` feature flag
+
 use ::garde::Validate;
 use actix_web::dev::{ServiceFactory, ServiceRequest};
 use actix_web::http::StatusCode;
