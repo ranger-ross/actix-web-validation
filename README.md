@@ -1,9 +1,12 @@
 # Actix Web Validation
 
-> [!WARNING]  
-> This library is currently in early access and may recieve breaking changes. Use at your own risk.
-
 Request validation for actix-web.
+
+
+#### WARNING
+
+This library is currently in early access and may recieve breaking changes.
+
 
 ## Supported Validation Libraries
 

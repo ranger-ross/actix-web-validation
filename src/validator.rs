@@ -1,3 +1,6 @@
+//! Validation for the [validator](https://docs.rs/validator/latest/validator) crate.
+//! Requires the `validator` feature flag
+
 use ::validator::Validate;
 use actix_web::dev::{ServiceFactory, ServiceRequest};
 use actix_web::http::StatusCode;
