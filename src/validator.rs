@@ -22,8 +22,9 @@ use validator::{ValidationError, ValidationErrors, ValidationErrorsKind};
 /// use actix_web::{post, web::{self, Json}, App};
 /// use serde::Deserialize;
 /// use validator::Validate;
+/// use actix_web_validation::validator::Validated;
 ///
-/// #[derive(Deserialize, Validate)]
+/// #[derive(Debug, Deserialize, Validate)]
 /// struct Info {
 ///     #[validate(length(min = 5))]
 ///     username: String,

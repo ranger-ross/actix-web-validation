@@ -21,8 +21,9 @@ use thiserror::Error;
 /// use actix_web::{post, web::{self, Json}, App};
 /// use serde::Deserialize;
 /// use garde::Validate;
+/// use actix_web_validation::garde::Validated;
 ///
-/// #[derive(Deserialize, Validate)]
+/// #[derive(Debug, Deserialize, Validate)]
 /// struct Info {
 ///     #[garde(length(min = 3))]
 ///     username: String,
