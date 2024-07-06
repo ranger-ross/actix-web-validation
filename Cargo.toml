@@ -13,14 +13,9 @@ actix-web = "4"
 futures-core = "0.3"
 thiserror = "1"
 validator = { version = "0.18", optional = true }
-garde = { version = "0.19", optional = true }
+garde = { version = "0.20", optional = true }
 
 [features]
-default = ["exclusive"]
-
-# Only allow one validation library at a time. Enabling this feature will reexport `Validated` at the crate root for easy of use.
-# Enabling this feature is reccomended unless you need multiple validation liraries
-exclusive = []
 
 # Use validator crate (https://github.com/Keats/validator) as the validation implmentation
 validator = ["dep:validator"]
