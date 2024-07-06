@@ -23,3 +23,6 @@ validator = ["dep:validator"]
 # Use garde crate (https://github.com/jprochazk/garde) as the validation implmentation
 garde = ["dep:garde"]
 
+[package.metadata.docs.rs]
+features = ["validator", "garde"]
+
