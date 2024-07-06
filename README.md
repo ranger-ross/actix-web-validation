@@ -23,11 +23,13 @@ actix-web-validation = { version = "0.0.0", features = ["validator"]}
 actix-web-validation = { version = "0.0.0", features = ["garde"]}
 ```
 
-```rs
-use actix_web_validation::Validated;
-
+```rust
+use actix_web_validation::validator::Validated;
 use validator::Validate;
-// or use garde::Validate;
+
+// or for garde
+// use actix_web_validation::garde::Validated;
+// use garde::Validate;
 
 // Do validation using your validation library
 #[derive(Debug, Validate, Deserialize)]
@@ -48,7 +50,7 @@ async fn hello(Validated(Json(payload)): Validated<Json<Example>>) -> impl Respo
 Custom error responses can achieved by providing an error handler.
 
 Below is an example custom error response that responds with JSON
-```rs
+```rust
 #[derive(Debug, Serialize, Error)]
 struct CustomErrorResponse {
     custom_message: String,
@@ -70,7 +72,7 @@ impl ResponseError for CustomErrorResponse {
 
 Below is an example for the `validator` crate
 
-```rs
+```rust
 fn error_handler(errors: ::validator::ValidationErrors, req: &HttpRequest) -> actix_web::Error {
     CustomErrorResponse {
         custom_message: "My custom message".to_string(),
@@ -98,7 +100,7 @@ async fn main() -> std::io::Result<()> {
 
 Below is an example for the `garde` crate
 
-```rs
+```rust
 fn error_handler(errors: ::garde::Report, req: &HttpRequest) -> actix_web::Error {
     CustomErrorResponse {
         custom_message: "My custom message".to_string(),
