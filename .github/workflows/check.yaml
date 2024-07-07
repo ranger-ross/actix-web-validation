@@ -43,7 +43,7 @@ jobs:
     - run: cargo install cargo-llvm-cov
 
     - name: cargo llvm-cov
-      run: cargo llvm-cov --offline --lcov --output-path lcov.info --all-features
+      run: cargo llvm-cov --lcov --output-path lcov.info --all-features
 
     - name: Record Rust version
       run: echo "RUST=$(rustc --version)" >> "$GITHUB_ENV"
