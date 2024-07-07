@@ -1,0 +1,44 @@
+name: Check
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+env: 
+  CARGO_TERM_COLOR: always
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+
+    - run: rustup toolchain install stable --profile minimal --no-self-update
+
+    - uses: Swatinem/rust-cache@v2
+
+    - run: cargo install cargo-tarpaulin
+
+    - name: cargo install cargo-llvm-cov
+      uses: taiki-e/install-action@cargo-llvm-cov
+
+    - run: cargo fmt --check
+
+    - run: cargo clippy -- -D warnings
+
+    - name: cargo llvm-cov
+      run: cargo llvm-cov --locked --lcov --output-path lcov.info
+
+    - name: Record Rust version
+      run: echo "RUST=$(rustc --version)" >> "$GITHUB_ENV"
+
+    - name: Upload to codecov.io
+      uses: codecov/codecov-action@v4
+      with:
+        fail_ci_if_error: true
+        token: ${{ secrets.CODECOV_TOKEN }}
+        env_vars: OS,RUST
