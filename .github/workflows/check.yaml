@@ -40,10 +40,10 @@ jobs:
 
     - uses: Swatinem/rust-cache@v2
 
-    - run: cargo install cargo-llvm-cov 
+    - run: cargo install cargo-llvm-cov
 
     - name: cargo llvm-cov
-      run: cargo llvm-cov --locked --lcov --output-path lcov.info
+      run: cargo llvm-cov --locked --lcov --output-path lcov.info --all-features
 
     - name: Record Rust version
       run: echo "RUST=$(rustc --version)" >> "$GITHUB_ENV"
