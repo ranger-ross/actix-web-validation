@@ -207,6 +207,7 @@ where
 #[cfg(test)]
 mod test {
     use super::*;
+    use actix_web::web::Bytes;
     use actix_web::{http::header::ContentType, post, test, web::Json, App, Responder};
     use serde::{Deserialize, Serialize};
 
@@ -227,14 +228,14 @@ mod test {
         }
     }
 
+    #[post("/")]
+    async fn endpoint(v: Validated<Json<ExamplePayload>>) -> impl Responder {
+        assert!(v.name.len() > 4);
+        HttpResponse::Ok().body(())
+    }
+
     #[actix_web::test]
     async fn should_validate_simple() {
-        #[post("/")]
-        async fn endpoint(v: Validated<Json<ExamplePayload>>) -> impl Responder {
-            assert!(v.name.len() > 4);
-            HttpResponse::Ok().body(())
-        }
-
         let app = test::init_service(App::new().service(endpoint)).await;
 
         // Valid request
@@ -258,5 +259,79 @@ mod test {
             .to_request();
         let resp = test::call_service(&app, req).await;
         assert_eq!(resp.status().as_u16(), 400);
+    }
+
+    #[actix_web::test]
+    async fn should_respond_with_errors_correctly() {
+        let app = test::init_service(App::new().service(endpoint)).await;
+
+        // Invalid request
+        let req = test::TestRequest::post()
+            .uri("/")
+            .insert_header(ContentType::plaintext())
+            .set_json(ExamplePayload {
+                name: "1234".to_string(),
+            })
+            .to_request();
+        let result = test::call_and_read_body(&app, req).await;
+        assert_eq!(
+            result,
+            Bytes::from_static(b"Validation errors in fields:\n\tname not long enough")
+        );
+    }
+
+    #[derive(Debug, Serialize, Error)]
+    struct CustomErrorResponse {
+        custom_message: String,
+        errors: Vec<String>,
+    }
+
+    impl Display for CustomErrorResponse {
+        fn fmt(&self, _f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+            unimplemented!()
+        }
+    }
+
+    impl ResponseError for CustomErrorResponse {
+        fn status_code(&self) -> actix_web::http::StatusCode {
+            actix_web::http::StatusCode::BAD_REQUEST
+        }
+
+        fn error_response(&self) -> HttpResponse<actix_web::body::BoxBody> {
+            HttpResponse::build(self.status_code()).body(serde_json::to_string(self).unwrap())
+        }
+    }
+
+    fn error_handler(errors: Vec<ValidationError>, _: &HttpRequest) -> actix_web::Error {
+        CustomErrorResponse {
+            custom_message: "My custom message".to_string(),
+            errors: errors.iter().map(|err| err.message.clone()).collect(),
+        }
+        .into()
+    }
+
+    #[actix_web::test]
+    async fn should_use_allow_custom_error_responses() {
+        let app = test::init_service(
+            App::new()
+                .service(endpoint)
+                .validation_error_handler(Arc::new(error_handler)),
+        )
+        .await;
+
+        let req = test::TestRequest::post()
+            .uri("/")
+            .insert_header(ContentType::plaintext())
+            .set_json(ExamplePayload {
+                name: "1234".to_string(),
+            })
+            .to_request();
+        let result = test::call_and_read_body(&app, req).await;
+        assert_eq!(
+            result,
+            Bytes::from_static(
+                b"{\"custom_message\":\"My custom message\",\"errors\":[\"name not long enough\"]}"
+            )
+        );
     }
 }
