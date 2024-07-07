@@ -18,7 +18,7 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
-    - run: dtolnay/rust-toolchain@1.79.0
+    - uses: dtolnay/rust-toolchain@1.79.0
       with: 
         clippy, rustfmt
 
@@ -28,13 +28,13 @@ jobs:
     - run: cargo clippy -- -D warnings
 
 
-  check:
+  test:
     runs-on: ubuntu-latest
     
     steps:
     - uses: actions/checkout@v4
 
-    - run: dtolnay/rust-toolchain@1.79.0
+    - uses: dtolnay/rust-toolchain@1.79.0
       with: 
         clippy, rustfmt
 
