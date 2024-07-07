@@ -177,3 +177,50 @@ where
         self.app_data(GardeErrorHandler { handler })
     }
 }
+
+#[cfg(test)]
+mod test {
+    use super::*;
+    use actix_web::{http::header::ContentType, post, test, web::Json, App, Responder};
+    use garde::Validate;
+    use serde::{Deserialize, Serialize};
+
+    #[actix_web::test]
+    async fn should_validate_simple() {
+        #[derive(Debug, Deserialize, Serialize, Validate)]
+        struct ExamplePayload {
+            #[garde(length(min = 5))]
+            name: String,
+        }
+
+        #[post("/")]
+        async fn endpoint(v: Validated<Json<ExamplePayload>>) -> impl Responder {
+            assert!(v.name.len() > 4);
+            HttpResponse::Ok().body(())
+        }
+
+        let app = test::init_service(App::new().service(endpoint)).await;
+
+        // Valid request
+        let req = test::TestRequest::post()
+            .uri("/")
+            .insert_header(ContentType::plaintext())
+            .set_json(ExamplePayload {
+                name: "123456".to_string(),
+            })
+            .to_request();
+        let resp = test::call_service(&app, req).await;
+        assert_eq!(resp.status().as_u16(), 200);
+
+        // Invalid request
+        let req = test::TestRequest::post()
+            .uri("/")
+            .insert_header(ContentType::plaintext())
+            .set_json(ExamplePayload {
+                name: "1234".to_string(),
+            })
+            .to_request();
+        let resp = test::call_service(&app, req).await;
+        assert_eq!(resp.status().as_u16(), 400);
+    }
+}
