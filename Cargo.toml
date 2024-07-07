@@ -28,6 +28,9 @@ validator = ["dep:validator"]
 # Use garde crate (https://github.com/jprochazk/garde) as the validation implmentation
 garde = ["dep:garde"]
 
+# Use custom validation implmentation (no external validation library)
+custom = []
+
 [package.metadata.docs.rs]
 all-features = true
 

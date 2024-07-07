@@ -12,6 +12,7 @@ This library is currently in early access and may recieve breaking changes.
 
 * [validator](https://github.com/Keats/validator)
 * [garde](https://github.com/jprochazk/garde)
+* custom (no external library)
 
 
 ## Usage
