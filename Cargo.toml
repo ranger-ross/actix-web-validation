@@ -15,6 +15,11 @@ thiserror = "1"
 validator = { version = "0.18", optional = true }
 garde = { version = "0.20", optional = true }
 
+[dev-dependencies]
+serde = { version = "1", features = ["derive"]}
+validator = { version = "0.18", features = ["derive"] }
+garde = { version = "0.20", features = ["derive"] }
+
 [features]
 
 # Use validator crate (https://github.com/Keats/validator) as the validation implmentation

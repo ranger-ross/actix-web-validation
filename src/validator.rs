@@ -22,8 +22,9 @@ use validator::{ValidationError, ValidationErrors, ValidationErrorsKind};
 /// use actix_web::{post, web::{self, Json}, App};
 /// use serde::Deserialize;
 /// use validator::Validate;
+/// use actix_web_validation::validator::Validated;
 ///
-/// #[derive(Deserialize, Validate)]
+/// #[derive(Debug, Deserialize, Validate)]
 /// struct Info {
 ///     #[validate(length(min = 5))]
 ///     username: String,
@@ -214,5 +215,52 @@ where
 {
     fn validator_error_handler(self, handler: ValidatorErrHandler) -> Self {
         self.app_data(ValidatorErrorHandler { handler })
+    }
+}
+
+#[cfg(test)]
+mod test {
+    use super::*;
+    use actix_web::{http::header::ContentType, post, test, web::Json, App, Responder};
+    use serde::{Deserialize, Serialize};
+    use validator::Validate;
+
+    #[actix_web::test]
+    async fn should_validate_simple() {
+        #[derive(Debug, Deserialize, Serialize, Validate)]
+        struct ExamplePayload {
+            #[validate(length(min = 5))]
+            name: String,
+        }
+
+        #[post("/")]
+        async fn endpoint(v: Validated<Json<ExamplePayload>>) -> impl Responder {
+            assert!(v.name.len() > 4);
+            HttpResponse::Ok().body(())
+        }
+
+        let app = test::init_service(App::new().service(endpoint)).await;
+
+        // Valid request
+        let req = test::TestRequest::post()
+            .uri("/")
+            .insert_header(ContentType::plaintext())
+            .set_json(ExamplePayload {
+                name: "123456".to_string(),
+            })
+            .to_request();
+        let resp = test::call_service(&app, req).await;
+        assert_eq!(resp.status().as_u16(), 200);
+
+        // Invalid request
+        let req = test::TestRequest::post()
+            .uri("/")
+            .insert_header(ContentType::plaintext())
+            .set_json(ExamplePayload {
+                name: "1234".to_string(),
+            })
+            .to_request();
+        let resp = test::call_service(&app, req).await;
+        assert_eq!(resp.status().as_u16(), 400);
     }
 }
