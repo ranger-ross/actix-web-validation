@@ -20,7 +20,7 @@ jobs:
 
     - uses: dtolnay/rust-toolchain@1.79.0
       with: 
-        clippy, rustfmt
+        components: clippy, rustfmt
 
     - uses: Swatinem/rust-cache@v2
 
@@ -36,7 +36,7 @@ jobs:
 
     - uses: dtolnay/rust-toolchain@1.79.0
       with: 
-        clippy, rustfmt
+        components: llvm-tools-preview
 
     - uses: Swatinem/rust-cache@v2
 
