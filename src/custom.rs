@@ -80,7 +80,7 @@ impl<T> std::ops::DerefMut for Validated<T> {
 pub struct ValidatedFut<T: FromRequest> {
     req: actix_web::HttpRequest,
     fut: <T as FromRequest>::Future,
-    error_handler: Option<ValidatorErrHandler>,
+    error_handler: Option<ValidationErrHandler>,
 }
 impl<T> Future for ValidatedFut<T>
 where
@@ -132,7 +132,7 @@ where
         payload: &mut actix_web::dev::Payload,
     ) -> Self::Future {
         let error_handler = req
-            .app_data::<ValidatorErrorHandler>()
+            .app_data::<ValidationErrorHandler>()
             .map(|h| h.handler.clone());
 
         let fut = T::from_request(req, payload);
@@ -184,23 +184,23 @@ impl ResponseError for Error {
     }
 }
 
-pub type ValidatorErrHandler =
+pub type ValidationErrHandler =
     Arc<dyn Fn(Vec<ValidationError>, &HttpRequest) -> actix_web::Error + Send + Sync>;
 
-struct ValidatorErrorHandler {
-    handler: ValidatorErrHandler,
+struct ValidationErrorHandler {
+    handler: ValidationErrHandler,
 }
 
-pub trait ValidatorErrorHandlerExt {
-    fn validator_error_handler(self, handler: ValidatorErrHandler) -> Self;
+pub trait ValidationErrorHandlerExt {
+    fn validation_error_handler(self, handler: ValidationErrHandler) -> Self;
 }
 
-impl<T> ValidatorErrorHandlerExt for App<T>
+impl<T> ValidationErrorHandlerExt for App<T>
 where
     T: ServiceFactory<ServiceRequest, Config = (), Error = actix_web::Error, InitError = ()>,
 {
-    fn validator_error_handler(self, handler: ValidatorErrHandler) -> Self {
-        self.app_data(ValidatorErrorHandler { handler })
+    fn validation_error_handler(self, handler: ValidationErrHandler) -> Self {
+        self.app_data(ValidationErrorHandler { handler })
     }
 }
 
