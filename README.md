@@ -3,11 +3,6 @@
 Request validation for actix-web.
 
 
-#### WARNING
-
-This library is currently in early access and may recieve breaking changes.
-
-
 ## Supported Validation Libraries
 
 * [validator](https://github.com/Keats/validator)
