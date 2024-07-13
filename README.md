@@ -25,15 +25,12 @@ Any type that implments the Actix [`FromRequest`](https://docs.rs/actix-web/late
 actix-web-validation = { version = "0.0.0", features = ["validator"]}
 # or 
 actix-web-validation = { version = "0.0.0", features = ["garde"]}
+# or 
+actix-web-validation = { version = "0.0.0", features = ["custom"]}
 ```
 
 ```rust,ignore
-use actix_web_validation::validator::Validated;
-use validator::Validate;
-
-// or for garde
-// use actix_web_validation::garde::Validated;
-// use garde::Validate;
+use actix_web_validation::Validated;
 
 // Do validation using your validation library
 #[derive(Debug, Validate, Deserialize)]
@@ -60,8 +57,6 @@ struct CustomErrorResponse {
     custom_message: String,
     errors: Vec<String>,
 }
-
-// impl Display for CustomErrorResponse { ... }
 
 impl ResponseError for CustomErrorResponse {
     fn status_code(&self) -> actix_web::http::StatusCode {
@@ -132,4 +127,9 @@ This library is heavily inspired by [Spring Validation](https://docs.spring.io/s
 The actix-web-validator is great but there are a few pain points I would like to address with this library.
 - More explict validation by using the `Validated` extractor to reduce the risk of using the wrong `Json`/`Query`/ect extractor by mistake.
 - Provide a common interface for validation libraries that can be extended as the Rust ecosystem evolves.
+
+
+## Limitations
+
+Due to how Rust handles overlapping trait implmentations, the `actix_web_validation::Validated` can only be used when 1 feature flag is enabled. This probalby won't impact most use cases because most applications will just use 1 validation library for everything. If you need to use multiple validation libraries at the same time, this library can still be used but, you willl need to fully qualify the import like `actix_web_validation::validator::Validated`, `actix_web_validation::garde::Validated`, and `actix_web_validation::custom::Validated`.
 
