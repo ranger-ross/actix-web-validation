@@ -6,7 +6,7 @@ edition = "2021"
 authors = ["Ross Sullivan <rosssullivan101@gmail.com>"]
 repository = "https://github.com/ranger-ross/actix-web-validation"
 license = "MIT"
-
+rust-version = "1.72" # Try to match https://github.com/actix/actix-web/blob/master/Cargo.toml#L22
 
 [dependencies]
 actix-web = "4"
