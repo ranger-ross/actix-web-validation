@@ -1,5 +1,18 @@
 //! Validation for the [validator](https://docs.rs/validator/latest/validator) crate.
 //! Requires the `validator` feature flag
+//!
+//! Validator is a popular validation library for Rust.
+//!
+//! You will need to import the validator crate in your `Cargo.toml`.
+//!
+//! ```toml
+//! [dependencies]
+//! validator = { version = "0.0.0", features = ["derive"] }
+//! actix-web-validation = { version = "0.0.0", features = ["validator"]}
+//! ```
+//!
+//! For usage examples, see the documentation for [`Validated`]
+//!
 
 use ::validator::Validate;
 use actix_web::dev::{ServiceFactory, ServiceRequest};
@@ -57,6 +70,7 @@ impl<T> std::ops::DerefMut for Validated<T> {
     }
 }
 
+/// Future that extracts and validates actix requests using the Actix Web [`FromRequest`] trait
 pub struct ValidatedFut<T: FromRequest> {
     req: actix_web::HttpRequest,
     fut: <T as FromRequest>::Future,
@@ -205,7 +219,9 @@ struct ValidatorErrorHandler {
     handler: ValidatorErrHandler,
 }
 
+/// Extension trait to provide a convenience method for adding custom error handler
 pub trait ValidatorErrorHandlerExt {
+    /// Add a custom error handler for validator validated requests
     fn validator_error_handler(self, handler: ValidatorErrHandler) -> Self;
 }
 

@@ -1,5 +1,18 @@
 //! Validation for the [garde](https://docs.rs/garde/latest/garde) crate.
 //! Requires the `garde` feature flag
+//!
+//! Garde is a popular validation library for Rust.
+//!
+//! You will need to import the garde crate in your `Cargo.toml`.
+//!
+//! ```toml
+//! [dependencies]
+//! garde = { version = "0.0.0", features = ["derive"] }
+//! actix-web-validation = { version = "0.0.0", features = ["garde"]}
+//! ```
+//!
+//! For usage examples, see the documentation for [`Validated`]
+//!
 
 use ::garde::Validate;
 use actix_web::dev::{ServiceFactory, ServiceRequest};
@@ -56,6 +69,7 @@ impl<T> std::ops::DerefMut for Validated<T> {
     }
 }
 
+/// Future that extracts and validates actix requests using the Actix Web [`FromRequest`] trait
 pub struct ValidatedFut<T: FromRequest> {
     req: actix_web::HttpRequest,
     fut: <T as FromRequest>::Future,
@@ -165,7 +179,9 @@ struct GardeErrorHandler {
     handler: GardeErrHandler,
 }
 
+/// Extension trait to provide a convenience method for adding custom error handler
 pub trait GardeErrorHandlerExt {
+    /// Add a custom error handler for garde validated requests
     fn garde_error_handler(self, handler: GardeErrHandler) -> Self;
 }
 
