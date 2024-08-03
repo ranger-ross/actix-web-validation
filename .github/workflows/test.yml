@@ -115,3 +115,22 @@ jobs:
           fail_ci_if_error: true
           token: ${{ secrets.CODECOV_TOKEN }}
           env_vars: OS,RUST
+  examples:
+    runs-on: ubuntu-latest
+    name: ubuntu / stable / examples
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+      - name: Install stable
+        uses: dtolnay/rust-toolchain@stable
+      - name: cargo generate-lockfile
+        if: hashFiles('Cargo.lock') == ''
+        run: cargo generate-lockfile
+
+      # Garde
+      - run: cargo build --example garde_simple --example garde_custom_error_response --features garde
+
+      # Validator
+      - run: cargo build --example validator_simple --example validator_custom_error_response --features validator
+

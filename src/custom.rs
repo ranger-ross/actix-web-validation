@@ -1,5 +1,8 @@
 //! Validation with using an external library for validation.
 //! Requires the `custom` feature flag
+//!
+//! For usage examples, see the documentation for [`Validated`]
+//!
 
 use actix_web::dev::{ServiceFactory, ServiceRequest};
 use actix_web::http::StatusCode;
@@ -191,7 +194,9 @@ struct ValidationErrorHandler {
     handler: ValidationErrHandler,
 }
 
+/// Extension trait to provide a convenience method for adding custom error handler
 pub trait ValidationErrorHandlerExt {
+    /// Add a custom error handler for garde validated requests
     fn validation_error_handler(self, handler: ValidationErrHandler) -> Self;
 }
 
