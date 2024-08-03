@@ -1,13 +1,13 @@
 use actix_web::{
     post, web::Json, App, HttpRequest, HttpResponse, HttpServer, Responder, ResponseError,
 };
-use actix_web_validation::{validator::ValidatorErrorHandlerExt, Validated};
+use actix_web_validation::{garde::GardeErrorHandlerExt, Validated};
 use derive_more::Display;
+use garde::Validate;
 use serde::{Deserialize, Serialize};
 use std::sync::Arc;
-use validator::Validate;
 
-/// To run this example use `cargo r --example validator_custom_error_response --features validator`
+/// To run this example use `cargo r --example garde_custom_error_response --features garde`
 ///
 /// Once the server is running you can test with
 /// ```
@@ -15,11 +15,10 @@ use validator::Validate;
 /// ```
 ///
 /// Changing the length of the name should result to more than 4 chars should result in HTTP 200
-///
 
 #[derive(Debug, Serialize, Deserialize, Validate)]
 struct Example {
-    #[validate(length(min = 5))]
+    #[garde(length(min = 5))]
     name: String,
 }
 
@@ -47,14 +46,10 @@ impl ResponseError for CustomErrorResponse {
     }
 }
 
-fn error_handler(errors: ::validator::ValidationErrors, _: &HttpRequest) -> actix_web::Error {
+fn error_handler(errors: ::garde::Report, _: &HttpRequest) -> actix_web::Error {
     CustomErrorResponse {
         custom_message: "My custom message".to_string(),
-        errors: errors
-            .errors()
-            .iter()
-            .map(|(err, _)| err.to_string())
-            .collect(),
+        errors: errors.iter().map(|(_, err)| err.to_string()).collect(),
     }
     .into()
 }
@@ -64,7 +59,7 @@ async fn main() -> std::io::Result<()> {
     HttpServer::new(|| {
         App::new()
             .service(example)
-            .validator_error_handler(Arc::new(error_handler))
+            .garde_error_handler(Arc::new(error_handler))
     })
     .bind(("127.0.0.1", 8080))?
     .run()
