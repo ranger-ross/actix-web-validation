@@ -1,4 +1,4 @@
-/// To run this example use ``cargo r --example garde_simple`
+/// To run this example use ``cargo r --example validator_simple`
 ///
 /// Once the server is running you can test with
 /// ```
@@ -10,13 +10,13 @@
 use actix_web::{post, web::Json, App, HttpResponse, HttpServer, Responder};
 // NOTE:Generally, you will want to use `actix_web_validation::Validated` instead.
 //      This import is due to a feature flag limitation in cargo examples
-use actix_web_validation::garde::Validated;
-use garde::Validate;
+use actix_web_validation::validator::Validated;
 use serde::{Deserialize, Serialize};
+use validator::Validate;
 
 #[derive(Debug, Serialize, Deserialize, Validate)]
 struct Example {
-    #[garde(length(min = 5))]
+    #[validate(length(min = 5))]
     name: String,
 }
 
