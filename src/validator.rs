@@ -71,6 +71,8 @@ impl<T> std::ops::DerefMut for Validated<T> {
 }
 
 /// Future that extracts and validates actix requests using the Actix Web [`FromRequest`] trait
+///
+/// End users of this library should not need to use this directly for most usecases
 pub struct ValidatedFut<T: FromRequest> {
     req: actix_web::HttpRequest,
     fut: <T as FromRequest>::Future,
