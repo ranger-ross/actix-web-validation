@@ -1,3 +1,5 @@
+#![cfg(not(test))]
+
 use actix_web::{post, web::Json, App, HttpResponse, HttpServer, Responder};
 use actix_web_validation::garde::Validated;
 use garde::Validate;

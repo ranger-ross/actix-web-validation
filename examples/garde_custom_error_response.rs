@@ -1,3 +1,5 @@
+#![cfg(not(test))]
+
 use actix_web::{
     post, web::Json, App, HttpRequest, HttpResponse, HttpServer, Responder, ResponseError,
 };
