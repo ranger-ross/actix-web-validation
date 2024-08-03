@@ -1,4 +1,4 @@
-/// To run this example use ``cargo r --example validator_simple`
+/// To run this example use ``cargo r --example validator_simple --features validator`
 ///
 /// Once the server is running you can test with
 /// ```
@@ -8,9 +8,7 @@
 /// Changing the length of the name should result to more than 4 chars should result in HTTP 200
 ///
 use actix_web::{post, web::Json, App, HttpResponse, HttpServer, Responder};
-// NOTE:Generally, you will want to use `actix_web_validation::Validated` instead.
-//      This import is due to a feature flag limitation in cargo examples
-use actix_web_validation::validator::Validated;
+use actix_web_validation::Validated;
 use serde::{Deserialize, Serialize};
 use validator::Validate;
 
