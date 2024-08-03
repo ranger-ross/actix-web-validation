@@ -70,6 +70,16 @@ impl<T> std::ops::DerefMut for Validated<T> {
     }
 }
 
+impl<T> Debug for Validated<T>
+where
+    T: Debug,
+{
+    #[inline]
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_tuple("Validated").field(&self.0).finish()
+    }
+}
+
 /// Future that extracts and validates actix requests using the Actix Web [`FromRequest`] trait
 ///
 /// End users of this library should not need to use this directly for most usecases
@@ -358,6 +368,18 @@ mod test {
         assert_eq!(
             result,
             Bytes::from_static(b"{\"custom_message\":\"My custom message\",\"errors\":[\"name\"]}")
+        );
+    }
+
+    #[test]
+    async fn debug_for_validated_should_work() {
+        let v = Validated(ExamplePayload {
+            name: "abcde".to_string(),
+        });
+
+        assert_eq!(
+            "Validated(ExamplePayload { name: \"abcde\" })",
+            format!("{v:?}")
         );
     }
 }
