@@ -148,7 +148,7 @@ impl ResponseError for Error {
         let message = self
             .report
             .iter()
-            .map(|(path, error)| format!("{}: {}", path.to_string(), error.message().to_string()))
+            .map(|(path, error)| format!("{path}: {}", error.message()))
             .collect::<Vec<_>>()
             .join("\n");
 
