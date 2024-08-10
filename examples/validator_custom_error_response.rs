@@ -33,7 +33,7 @@ async fn example(Validated(Json(payload)): Validated<Json<Example>>) -> impl Res
 }
 
 #[derive(Debug, Serialize, Display)]
-#[display(fmt = "My custom error. This is just an example from the derive_more crate")]
+#[display("My custom error. This is just an example from the derive_more crate")]
 struct CustomErrorResponse {
     custom_message: String,
     errors: Vec<String>,
