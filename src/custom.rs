@@ -8,9 +8,8 @@ use actix_web::dev::{ServiceFactory, ServiceRequest};
 use actix_web::http::StatusCode;
 use actix_web::FromRequest;
 use actix_web::{App, HttpRequest, HttpResponse, ResponseError};
-use futures_core::ready;
-use futures_core::Future;
 use std::fmt::Display;
+use std::future::Future;
 use std::sync::Arc;
 use std::{fmt::Debug, ops::Deref, pin::Pin, task::Poll};
 use thiserror::Error;
@@ -108,7 +107,9 @@ where
         cx: &mut std::task::Context<'_>,
     ) -> std::task::Poll<Self::Output> {
         let this = self.get_mut();
-        let res = ready!(Pin::new(&mut this.fut).poll(cx));
+        let Poll::Ready(res) = Pin::new(&mut this.fut).poll(cx) else {
+            return std::task::Poll::Pending;
+        };
 
         let res = match res {
             Ok(data) => {
