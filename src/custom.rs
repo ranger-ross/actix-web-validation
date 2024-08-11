@@ -4,6 +4,7 @@
 //! For usage examples, see the documentation for [`Validated`]
 //!
 
+use crate::validated_definition;
 use actix_web::dev::{ServiceFactory, ServiceRequest};
 use actix_web::http::StatusCode;
 use actix_web::FromRequest;
@@ -59,35 +60,7 @@ impl Display for ValidationError {
 /// ```
 pub struct Validated<T>(pub T);
 
-impl<T> Validated<T> {
-    pub fn into_inner(self) -> T {
-        self.0
-    }
-}
-
-impl<T> std::ops::Deref for Validated<T> {
-    type Target = T;
-
-    fn deref(&self) -> &Self::Target {
-        &self.0
-    }
-}
-
-impl<T> std::ops::DerefMut for Validated<T> {
-    fn deref_mut(&mut self) -> &mut Self::Target {
-        &mut self.0
-    }
-}
-
-impl<T> Debug for Validated<T>
-where
-    T: Debug,
-{
-    #[inline]
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        f.debug_tuple("Validated").field(&self.0).finish()
-    }
-}
+validated_definition!();
 
 pub struct ValidatedFut<T: FromRequest> {
     req: actix_web::HttpRequest,
