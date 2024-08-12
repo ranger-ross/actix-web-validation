@@ -23,11 +23,11 @@ Any type that implments the Actix [`FromRequest`](https://docs.rs/actix-web/late
 
 ```toml
 # Cargo.toml
-actix-web-validation = { version = "0.0.0", features = ["validator"]}
+actix-web-validation = { version = "0.0.0", features = ["validator"] }
 # or 
-actix-web-validation = { version = "0.0.0", features = ["garde"]}
+actix-web-validation = { version = "0.0.0", features = ["garde"] }
 # or 
-actix-web-validation = { version = "0.0.0", features = ["custom"]}
+actix-web-validation = { version = "0.0.0", features = ["custom"] }
 ```
 
 ```rust,ignore
