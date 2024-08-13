@@ -180,6 +180,12 @@ where
     }
 }
 
+impl GardeErrorHandlerExt for &mut actix_web::web::ServiceConfig {
+    fn garde_error_handler(self, handler: GardeErrHandler) -> Self {
+        self.app_data(GardeErrorHandler { handler })
+    }
+}
+
 #[cfg(test)]
 mod test {
     use super::*;

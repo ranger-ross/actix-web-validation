@@ -193,6 +193,12 @@ where
     }
 }
 
+impl ValidationErrorHandlerExt for &mut actix_web::web::ServiceConfig {
+    fn validation_error_handler(self, handler: ValidationErrHandler) -> Self {
+        self.app_data(ValidationErrorHandler { handler })
+    }
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
