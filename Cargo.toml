@@ -1,7 +1,7 @@
 [package]
 name = "actix-web-validation"
 description = "A common validation interface for actix-web applications"
-version = "0.5.0"
+version = "0.5.1"
 edition = "2021"
 authors = ["Ross Sullivan <rosssullivan101@gmail.com>"]
 repository = "https://github.com/ranger-ross/actix-web-validation"
