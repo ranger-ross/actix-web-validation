@@ -124,3 +124,9 @@ jobs:
           toolchain: ${{ matrix.msrv }}
       - name: cargo +${{ matrix.msrv }} check
         run: cargo check
+  spellcheck:
+    runs-on: ubuntu-latest
+    name: ubuntu / spellcheck
+    steps:
+      - uses: actions/checkout@v4
+      - uses: crate-ci/typos@master
