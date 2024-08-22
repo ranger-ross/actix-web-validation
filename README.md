@@ -18,7 +18,7 @@ Request validation for actix-web.
 
 ## Usage
 
-Any type that implments the Actix [`FromRequest`](https://docs.rs/actix-web/latest/actix_web/trait.FromRequest.html) trait can be automatically validated.
+Any type that implements the Actix [`FromRequest`](https://docs.rs/actix-web/latest/actix_web/trait.FromRequest.html) trait can be automatically validated.
 
 
 ```toml
@@ -126,11 +126,11 @@ async fn main() -> std::io::Result<()> {
 This library is heavily inspired by [Spring Validation](https://docs.spring.io/spring-framework/reference/core/validation/beanvalidation.html) and [actix-web-validator](https://crates.io/crates/actix-web-validator). 
 
 The actix-web-validator is great but there are a few pain points I would like to address with this library.
-- More explict validation by using the `Validated` extractor to reduce the risk of using the wrong `Json`/`Query`/ect extractor by mistake.
+- More explicit validation by using the `Validated` extractor to reduce the risk of using the wrong `Json`/`Query`/etc extractor by mistake.
 - Provide a common interface for validation libraries that can be extended as the Rust ecosystem evolves.
 
 
 ## Limitations
 
-Due to how Rust handles overlapping trait implmentations, the `actix_web_validation::Validated` can only be used when 1 feature flag is enabled. This probalby won't impact most use cases because most applications will just use 1 validation library for everything. If you need to use multiple validation libraries at the same time, this library can still be used but, you willl need to fully qualify the import like `actix_web_validation::validator::Validated`, `actix_web_validation::garde::Validated`, and `actix_web_validation::custom::Validated`.
+Due to how Rust handles overlapping trait implementations, the `actix_web_validation::Validated` can only be used when 1 feature flag is enabled. This probably won't impact most use cases because most applications will just use 1 validation library for everything. If you need to use multiple validation libraries at the same time, this library can still be used but, you will need to fully qualify the import like `actix_web_validation::validator::Validated`, `actix_web_validation::garde::Validated`, and `actix_web_validation::custom::Validated`.
 
