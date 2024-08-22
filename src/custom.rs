@@ -15,7 +15,7 @@ use std::sync::Arc;
 use std::{fmt::Debug, ops::Deref, pin::Pin, task::Poll};
 use thiserror::Error;
 
-/// A trait that be implmented to provide validation logic.
+/// A trait that can be implemented to provide validation logic.
 pub trait Validate {
     fn validate(&self) -> Result<(), Vec<ValidationError>>;
 }
