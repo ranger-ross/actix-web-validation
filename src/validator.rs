@@ -27,7 +27,7 @@ use std::{fmt::Debug, ops::Deref, pin::Pin, task::Poll};
 use thiserror::Error;
 use validator::{ValidationError, ValidationErrors, ValidationErrorsKind};
 
-/// A validated extactor.
+/// A validated extractor.
 ///
 /// This type will run any validations on the inner extractors.
 ///
