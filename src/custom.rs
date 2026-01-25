@@ -32,7 +32,7 @@ impl Display for ValidationError {
     }
 }
 
-/// A validated extactor.
+/// A validated extractor.
 ///
 /// This type will run any validations on the inner extractors.
 ///
