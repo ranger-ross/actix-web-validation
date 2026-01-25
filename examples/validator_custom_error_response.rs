@@ -1,9 +1,9 @@
 #![cfg(not(test))]
 
 use actix_web::{
-    post, web::Json, App, HttpRequest, HttpResponse, HttpServer, Responder, ResponseError,
+    App, HttpRequest, HttpResponse, HttpServer, Responder, ResponseError, post, web::Json,
 };
-use actix_web_validation::{validator::ValidatorErrorHandlerExt, Validated};
+use actix_web_validation::{Validated, validator::ValidatorErrorHandlerExt};
 use derive_more::Display;
 use serde::{Deserialize, Serialize};
 use std::sync::Arc;

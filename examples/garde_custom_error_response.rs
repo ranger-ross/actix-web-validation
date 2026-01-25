@@ -1,9 +1,9 @@
 #![cfg(not(test))]
 
 use actix_web::{
-    post, web::Json, App, HttpRequest, HttpResponse, HttpServer, Responder, ResponseError,
+    App, HttpRequest, HttpResponse, HttpServer, Responder, ResponseError, post, web::Json,
 };
-use actix_web_validation::{garde::GardeErrorHandlerExt, Validated};
+use actix_web_validation::{Validated, garde::GardeErrorHandlerExt};
 use derive_more::Display;
 use garde::Validate;
 use serde::{Deserialize, Serialize};

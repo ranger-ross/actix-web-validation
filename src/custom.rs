@@ -5,9 +5,9 @@
 //!
 
 use crate::validated_definition;
+use actix_web::FromRequest;
 use actix_web::dev::{ServiceFactory, ServiceRequest};
 use actix_web::http::StatusCode;
-use actix_web::FromRequest;
 use actix_web::{App, HttpRequest, HttpResponse, ResponseError};
 use std::fmt::Display;
 use std::future::Future;
@@ -203,7 +203,7 @@ impl ValidationErrorHandlerExt for &mut actix_web::web::ServiceConfig {
 mod test {
     use super::*;
     use actix_web::web::Bytes;
-    use actix_web::{http::header::ContentType, post, test, web::Json, App, Responder};
+    use actix_web::{App, Responder, http::header::ContentType, post, test, web::Json};
     use serde::{Deserialize, Serialize};
 
     #[derive(Debug, Deserialize, Serialize)]
