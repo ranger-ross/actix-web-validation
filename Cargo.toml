@@ -8,7 +8,7 @@ repository = "https://github.com/ranger-ross/actix-web-validation"
 license = "MIT"
 # Try to match https://github.com/actix/actix-web/blob/master/Cargo.toml#L22
 # Also be sure to update the README MSRV badge
-rust-version = "1.85"
+rust-version = "1.88"
 
 [dependencies]
 actix-web = "4"
