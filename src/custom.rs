@@ -161,8 +161,7 @@ impl ResponseError for Error {
     fn error_response(&self) -> HttpResponse {
         HttpResponse::build(StatusCode::BAD_REQUEST).body(format!(
             "Validation errors in fields:\n{}",
-            self
-                .errors
+            self.errors
                 .iter()
                 .map(|err| { format!("\t{}", err) })
                 .collect::<Vec<_>>()
