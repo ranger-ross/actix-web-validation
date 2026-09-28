@@ -16,6 +16,7 @@ pub use crate::garde::Validated;
 #[cfg(all(feature = "custom", not(feature = "validator"), not(feature = "garde")))]
 pub use crate::custom::Validated;
 
+#[allow(unused)]
 macro_rules! validated_definition {
     () => {
         impl<T> Validated<T> {
@@ -50,4 +51,5 @@ macro_rules! validated_definition {
     };
 }
 
+#[allow(unused)]
 pub(crate) use validated_definition;
